@@ -66,12 +66,12 @@
             bSideLength: 8,// 矩形边界上小矩形的边长值，默认为6
 	        
 	        // 每个遮罩的开始显示时间和结束显示时间，一个遮罩对应一个矩形
-	        /*masksTime: [{
-                maskId: 0,
-		        startTime: 5,
+	       /* masksTime: [{
+                maskId: 1,
+		        startTime: 0,
 		        endTime: 10,
 	        }, {
-                maskId: 1,
+                maskId: 2,
                 startTime: 7,
                 endTime: 12,
             }]*/
@@ -80,7 +80,7 @@
         btn.addEventListener('click', function () {
             mask.enableDrawMask();
             // 所有遮罩按其自身时效进行显隐
-            /*let a = 0;
+           /* let a = 0;
             window.setInterval(function () {
                 mask.second = ++ a;
                 mask.showAndHideControl();

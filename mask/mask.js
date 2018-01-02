@@ -41,7 +41,7 @@ class Mask{
          id: 1,
          coord:[x,y,w,h],
          }*/];
-        this.maskId = 0;
+        this.maskId = 1;
         
         // 遮罩选择div
         this.choiceDiv = document.getElementsByClassName('choice')[0];
@@ -345,7 +345,7 @@ class Mask{
         this.ctx.textAlign = 'center';
         let textX = coord[0] + coord[2] / 2;
         let textY = coord[1] + 20;
-        this.ctx.fillText(rect.maskId + 1, textX, textY);
+        this.ctx.fillText(rect.maskId, textX, textY);
         this.ctx.restore();
     }
     
@@ -677,8 +677,8 @@ class Mask{
      */
     show(index){
         let coord = this.rects[index].coord;
+        // 填充
         this.fillRect(coord);
-        
         // 绘制矩形上mask id数字
         this.fillText(this.rects[index]);
     }
