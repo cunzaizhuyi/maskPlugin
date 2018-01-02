@@ -1,11 +1,8 @@
 /**
- * Copyright 2017 Qiyi Inc. All rights reserved.
- *
- * @file:   $
- * @path:   $
- * @desc:   $
- * @author: yangshuaiwei@qiyi.com
- * @date:  $
+ * @file:   mask.js
+ * @path:   mask/mask.js
+ * @desc:   遮罩主类
+ * @date:  2018.01.02
  */
 
 class Mask{
@@ -26,6 +23,7 @@ class Mask{
         this.bRectsStrokeStyle = option.bRectsStrokeStyle || ctx.strokeStyle;
         this.inRectCursor = option.inRectCursor || 'move';
         this.bSideLength = option.bSideLength || 6;
+        
         // 数据
         this.origin = [0, 0];
         this.wh = [0, 0];
