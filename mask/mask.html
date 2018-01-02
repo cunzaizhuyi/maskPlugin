@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>mask</title>
+	<link rel="stylesheet" href="../../lib/font-awesome-4.7.0/css/font-awesome.css">
+	<style>
+		body{
+			padding:0;
+			margin:0;
+		}
+		canvas{
+			height:600px;
+			width:600px;
+			background-color: #ccc;
+			position: absolute;
+		}
+		.choice{
+			position: absolute;
+			width: 65px;
+			height: 35px;
+			border: 1px solid blue;
+			box-sizing: border-box;
+		}
+		.fa-times{
+			color: red;
+		}
+		.fa-check{
+			color: green;
+		}
+		.btn-mask{
+			position: absolute;
+			top:600px;
+		}
+	</style>
+	
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="choice">
+	<span class="cancelMask"><i class="fa fa-2x fa-times"></i></span>
+	<span class="confirmMask"><i class="fa fa-2x fa-check"></i></span>
+</div>
+
+<input type="button" value="遮罩" class="btn-mask">
+
+<script src="mask.js"></script>
+</body>
+</html>
