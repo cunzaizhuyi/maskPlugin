@@ -52,14 +52,20 @@
         let el = document.getElementById("canvas");
         let choiceEl = document.getElementsByClassName('choice')[0];
         let btn = document.getElementsByClassName('btn-mask')[0];
+        
         // new 以及 传参。共三个参数，最后一个是可选参数。
         let mask = new Mask(el, choiceEl, {
-            fillStyle: "#eeeeee", // 矩形填充色
-	        strokeStyle: "#0000ff", // 矩形边界线颜色
-            globalAlpha: 0.6, // 矩形透明度
-            bRectsStrokeStyle:"#ff00ff",// 矩形边界上的小矩形的颜色
-	        inRectCursor: 'move',// 当鼠标处于某个小矩形内部时鼠标样式
+            
+            // 矩形相关设置
+            fillStyle: "#eeeeee", // 矩形填充色, 默认为'#eeeeee'
+	        strokeStyle: "#0000ff", // 矩形边界线颜色, 默认为'#0000ff';
+	        inRectCursor: 'move',// 当鼠标处于某个小矩形内部时鼠标样式，默认为'move'。可以设置为'pointer'之类的。
+	        
+	        // 矩形边界上的八个小矩形 相关设置
+            bRectsStrokeStyle:"#ff00ff",// 矩形边界上的小矩形的颜色，默认为'#0000ff'
+            bSideLength: 8,// 矩形边界上小矩形的边长值，默认为6
         });
+        
         btn.addEventListener('click', function () {
             mask.enableDrawMask();
         });

@@ -23,10 +23,9 @@ class Mask{
         // 接口项 设置
         ctx.fillStyle = option.fillStyle || "#eeeeee";
         ctx.strokeStyle = option.strokeStyle || "#0000ff";
-        ctx.globalAlpha = option.globalAlpha || 0.5;
         this.bRectsStrokeStyle = option.bRectsStrokeStyle || ctx.strokeStyle;
         this.inRectCursor = option.inRectCursor || 'move';
-        
+        this.bSideLength = option.bSideLength || 6;
         // 数据
         this.origin = [0, 0];
         this.wh = [0, 0];
@@ -606,7 +605,7 @@ class Mask{
      */
     strokeEightDirection(rect){
         let eightRects;
-        let width = 6;
+        let width = this.bSideLength;
         let height = width;
         let halfWidth = width / 2;
         let halfHeight = height / 2;
