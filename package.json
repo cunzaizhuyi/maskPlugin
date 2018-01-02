@@ -1,0 +1,27 @@
+{
+  "name": "maskplugin",
+  "version": "1.0.0",
+  "description": "draw rects using canvas ",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cunzaizhuyi/maskPlugin.git"
+  },
+  "keywords": [
+    "canvas",
+    "rect",
+    "mask"
+  ],
+  "author": "cunzaizhuyi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cunzaizhuyi/maskPlugin/issues"
+  },
+  "homepage": "https://github.com/cunzaizhuyi/maskPlugin#readme"
+}
