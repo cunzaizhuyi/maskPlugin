@@ -107,6 +107,8 @@ class Mask{
      * @param e
      */
     mousemoveHandler(e){
+        this.modifyCursorStyle([e.offsetX, e.offsetY]);
+        
         if(!this.isMouseDown){
             return;
         }
@@ -138,7 +140,7 @@ class Mask{
         
         let end = [e.offsetX, e.offsetY];
         this.wh = [end[0] - this.origin[0], end[1] - this.origin[1]];
-       
+        
         // 确定是三种行为中的哪一种引起的鼠标弹起
         switch (this.todo){
             case "move":
@@ -154,7 +156,7 @@ class Mask{
                 this.activeIndex = this.rects.length - 1;
                 break;
         }
-        console.log("活动矩形：" ,this.rects[this.activeIndex]);
+        //console.log("活动矩形：" ,this.rects[this.activeIndex]);
         this.reset3action();
     }
     
@@ -197,9 +199,9 @@ class Mask{
         this.clearCanvas();
         // 填充矩形列表
         this.fillRects();
-    
+        
         this.choiceDiv.style.display = 'none';
-    
+        
         // 重置数据
         this.origin = [0, 0];
         this.wh = [0, 0];
@@ -217,6 +219,8 @@ class Mask{
         this.fillRects();
         // 画当前矩形
         this.strokeRect(rectCoord);
+        // 绘制矩形上的八个边界小矩形
+        this.strokeEightDirection(rectCoord);
     }
     
     /**
@@ -234,6 +238,8 @@ class Mask{
         this.clearCanvas();
         this.fillRectsButOne(rectIndex);
         this.strokeRect(newRectCoord);
+        // 绘制矩形上的八个边界小矩形
+        this.strokeEightDirection(newRectCoord);
     }
     
     /**
@@ -252,6 +258,8 @@ class Mask{
         this.clearCanvas();
         this.fillRectsButOne(rectIndex);
         this.strokeRect(selectedRectCoord);
+        // 绘制矩形上的八个边界小矩形
+        this.strokeEightDirection(selectedRectCoord);
     }
     
     // -------------------------------mouse up--------------------------------------
@@ -299,7 +307,7 @@ class Mask{
         let rightRect = this.rectifyCoord([...this.origin, ...this.wh]);
         this.origin = [rightRect[0], rightRect[1]];
         this.wh = [rightRect[2], rightRect[3]];
-    
+        
         // 新建矩形添加到this.rects中
         this.rects.push({
             maskId: this.maskId ++,
@@ -315,14 +323,6 @@ class Mask{
     }
     
     // -----------------------------------方法-----------------------------------
-    
-    /**
-     * 判断鼠标是否按下
-     * @returns {boolean}
-     */
-    ismouseDown(){
-        return this.origin[0] !== 0 || this.origin[1] !== 0;
-    }
     
     strokeRect(rectCoord){
         this.ctx.strokeRect(...rectCoord);
@@ -411,7 +411,7 @@ class Mask{
      */
     isPointOnBoundary(point, rect){
         let isOn = false;
-        let range = 1;
+        let range = 4;
         let onleft = (point[0] <= rect[0] + range) && (point[0] >= rect[0] - range);
         let onright = (point[0] <= rect[0] + rect[2] + range) && (point[0] >= rect[0] + rect[2] - range);
         let ontop = (point[1] <= rect[1] + range) && (point[1] >= rect[1] - range);
@@ -429,7 +429,7 @@ class Mask{
      * @param rect
      */
     getScaleBoundary(point, rect){
-        let range = 1;
+        let range = 4;
         
         let pointX = point[0];
         let pointY = point[1];
@@ -528,12 +528,12 @@ class Mask{
         // 左下角到右下角画出来的矩形
         if(width > 0 && height < 0){
             rect = [x, y + height, width, Math.abs(height)];
-        
-        // 右上角到左下角画出来的矩形
+            
+            // 右上角到左下角画出来的矩形
         }else if(width < 0 && height > 0){
             rect = [x + width, y, Math.abs(width), height];
-        
-        // 右下角到左上角画出来的矩形
+            
+            // 右下角到左上角画出来的矩形
         }else if(width < 0 && height < 0){
             rect = [x + width, y + height, Math.abs(width), Math.abs(height)];
         }
@@ -541,12 +541,95 @@ class Mask{
         return rect;
     }
     
+    /**
+     * 如果鼠标移动到某个矩形内部或边界，修改canvas元素的鼠标形状
+     * @param point
+     */
+    modifyCursorStyle(point){
+        let topo = 'outer';
+        let whichBorder = '';
+        for(let i = 0; i < this.rects.length; i++){
+            if(this.isPointInRect(point, this.rects[i].coord)){
+                topo = 'inner';
+                break;
+            }
+            if(this.isPointOnBoundary(point, this.rects[i].coord)){
+                topo = 'border';
+                whichBorder = this.getScaleBoundary(point, this.rects[i].coord);
+                break;
+            }
+        }
+        
+        if(topo === 'inner'){
+            this.canvas.style.cursor = "move";
+        }else if(topo === 'outer'){
+            this.canvas.style.cursor = "default";
+        }else if(topo === 'border'){
+            switch (whichBorder){
+                case "n":
+                    this.canvas.style.cursor = "n-resize";
+                    break;
+                case "s":
+                    this.canvas.style.cursor = "s-resize";
+                    break;
+                case "w":
+                    this.canvas.style.cursor = "w-resize";
+                    break;
+                case "e":
+                    this.canvas.style.cursor = "e-resize";
+                    break;
+                case "nw":
+                    this.canvas.style.cursor = "nw-resize";
+                    break;
+                case "ne":
+                    this.canvas.style.cursor = "ne-resize";
+                    break;
+                case "sw":
+                    this.canvas.style.cursor = "sw-resize";
+                    break;
+                case "se":
+                    this.canvas.style.cursor = "se-resize";
+                    break;
+                
+            }
+        }
+    }
+    
+    /**
+     * 绘制矩形的八个角，方便缩放
+     * @param rect
+     */
+    strokeEightDirection(rect){
+        let eightRects;
+        let width = 6;
+        let height = width;
+        let halfWidth = width / 2;
+        let halfHeight = height / 2;
+        let rectX = rect[0];
+        let rectY = rect[1];
+        let rectW = rect[2];
+        let rectH = rect[3];
+        let nw = [rectX - halfWidth, rectY - halfHeight, width, height];
+        let n = [rectX + rectW / 2 - halfWidth, rectY - halfHeight, width, height];
+        let ne = [rectX + rectW - halfWidth, rectY - halfHeight, width, height];
+        let e = [rectX + rectW - halfWidth, rectY + rectH / 2 - halfHeight, width, height];
+        let se = [rectX + rectW - halfWidth, rectY + rectH - halfHeight, width, height];
+        let s = [rectX + rectW / 2 - halfWidth, rectY + rectH - halfHeight, width, height];
+        let sw = [rectX - halfWidth, rectY + rectH - halfHeight, width, height];
+        let w = [rectX - halfWidth, rectY + rectH / 2 - halfHeight, width, height];
+        eightRects = [nw, n, ne, e, se, s, sw, w];
+        this.strokeRects(eightRects);
+    }
+    
+    /**
+     * stroke一个矩形列表
+     * @param rects e.g. rects = [rect1, rect2], rect1 = [1,2,3,4], rect2 = [2,3,4,5]
+     */
+    strokeRects(rects){
+        for(let i = 0; i < rects.length; i++){
+            let coord = rects[i];
+            this.ctx.strokeRect(coord[0], coord[1], coord[2], coord[3]);
+        }
+    }
+    
 }
-
-let el = document.getElementById("canvas");
-let choiceEl = document.getElementsByClassName('choice')[0];
-let btn = document.getElementsByClassName('btn-mask')[0];
-let mask = new Mask(el, choiceEl);
-btn.addEventListener('click', function () {
-    mask.enableDrawMask();
-});

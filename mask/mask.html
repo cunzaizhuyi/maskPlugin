@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>mask</title>
-	<link rel="stylesheet" href="../../lib/font-awesome-4.7.0/css/font-awesome.css">
+	<link rel="stylesheet" href="../lib/font-awesome-4.7.0/css/font-awesome.css">
 	<style>
 		body{
 			padding:0;
@@ -33,7 +33,7 @@
 			top:600px;
 		}
 	</style>
-	
+
 </head>
 <body>
 <canvas id="canvas"></canvas>
@@ -45,5 +45,18 @@
 <input type="button" value="遮罩" class="btn-mask">
 
 <script src="mask.js"></script>
+<script>
+    window.onload = function () {
+        
+        let el = document.getElementById("canvas");
+        let choiceEl = document.getElementsByClassName('choice')[0];
+        let btn = document.getElementsByClassName('btn-mask')[0];
+        let mask = new Mask(el, choiceEl);
+        btn.addEventListener('click', function () {
+            mask.enableDrawMask();
+        });
+        
+    };
+</script>
 </body>
 </html>
