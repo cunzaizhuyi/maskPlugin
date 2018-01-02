@@ -44,6 +44,7 @@
 
 <input type="button" value="遮罩" class="btn-mask">
 
+
 <script src="mask.js"></script>
 <script>
     window.onload = function () {
@@ -51,12 +52,20 @@
         let el = document.getElementById("canvas");
         let choiceEl = document.getElementsByClassName('choice')[0];
         let btn = document.getElementsByClassName('btn-mask')[0];
-        let mask = new Mask(el, choiceEl);
+        // new 以及 传参。共三个参数，最后一个是可选参数。
+        let mask = new Mask(el, choiceEl, {
+            fillStyle: "#eeeeee", // 矩形填充色
+	        strokeStyle: "#0000ff", // 矩形边界线颜色
+            globalAlpha: 0.6, // 矩形透明度
+            bRectsStrokeStyle:"#ff00ff",// 矩形边界上的小矩形的颜色
+	        inRectCursor: 'move',// 当鼠标处于某个小矩形内部时鼠标样式
+        });
         btn.addEventListener('click', function () {
             mask.enableDrawMask();
         });
         
     };
 </script>
+
 </body>
 </html>

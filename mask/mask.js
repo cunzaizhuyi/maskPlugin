@@ -9,7 +9,7 @@
  */
 
 class Mask{
-    constructor(el, choiceEl){
+    constructor(el, choiceEl, option){
         // 要画遮罩的元素，要求是个canvas
         this.canvas = el || null;
         this.canvas.width = parseInt(window.getComputedStyle(this.canvas).width);
@@ -20,8 +20,12 @@ class Mask{
         // canvas绘图环境
         this.ctx = this.canvas.getContext('2d') || null;
         let ctx = this.ctx;
-        ctx.fillStyle = "#eeeeee";
-        ctx.strokeStyle = "#0000ff";
+        // 接口项 设置
+        ctx.fillStyle = option.fillStyle || "#eeeeee";
+        ctx.strokeStyle = option.strokeStyle || "#0000ff";
+        ctx.globalAlpha = option.globalAlpha || 0.5;
+        this.bRectsStrokeStyle = option.bRectsStrokeStyle || ctx.strokeStyle;
+        this.inRectCursor = option.inRectCursor || 'move';
         
         // 数据
         this.origin = [0, 0];
@@ -514,7 +518,7 @@ class Mask{
     }
     
     /**
-     * 如果新建矩形时，不是从左上角向右下角画的，则要对矩形rect数组的四个数变换
+     * 如果新建矩形时，不是从左上角向右下角画的，则要对矩形rect数组中的四个数进行变换
      * 使其成为一个从左上角到右下角画出来的矩形
      * @param rect
      * @returns {*}
@@ -529,11 +533,11 @@ class Mask{
         if(width > 0 && height < 0){
             rect = [x, y + height, width, Math.abs(height)];
             
-            // 右上角到左下角画出来的矩形
+        // 右上角到左下角画出来的矩形
         }else if(width < 0 && height > 0){
             rect = [x + width, y, Math.abs(width), height];
             
-            // 右下角到左上角画出来的矩形
+        // 右下角到左上角画出来的矩形
         }else if(width < 0 && height < 0){
             rect = [x + width, y + height, Math.abs(width), Math.abs(height)];
         }
@@ -561,7 +565,8 @@ class Mask{
         }
         
         if(topo === 'inner'){
-            this.canvas.style.cursor = "move";
+            // 通过外部设置
+            this.canvas.style.cursor = this.inRectCursor;
         }else if(topo === 'outer'){
             this.canvas.style.cursor = "default";
         }else if(topo === 'border'){
@@ -618,7 +623,11 @@ class Mask{
         let sw = [rectX - halfWidth, rectY + rectH - halfHeight, width, height];
         let w = [rectX - halfWidth, rectY + rectH / 2 - halfHeight, width, height];
         eightRects = [nw, n, ne, e, se, s, sw, w];
+        
+        this.ctx.save();
+        this.ctx.strokeStyle = this.bRectsStrokeStyle;
         this.strokeRects(eightRects);
+        this.ctx.restore();
     }
     
     /**
