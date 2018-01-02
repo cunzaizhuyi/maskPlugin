@@ -1,10 +1,11 @@
 /**
  * Copyright 2017 Qiyi Inc. All rights reserved.
  *
- * @file:   mask.js
- * @path:   mask.js
- * @desc:   画矩形遮罩
- * @date:  20180102
+ * @file:   $
+ * @path:   $
+ * @desc:   $
+ * @author: yangshuaiwei@qiyi.com
+ * @date:  $
  */
 
 class Mask{
@@ -137,23 +138,23 @@ class Mask{
         
         let end = [e.offsetX, e.offsetY];
         this.wh = [end[0] - this.origin[0], end[1] - this.origin[1]];
-        
+       
         // 确定是三种行为中的哪一种引起的鼠标弹起
-        let rectCoord = [...this.origin, ...this.wh];
         switch (this.todo){
             case "move":
-                this.moveRectMUpHandler(this.toMoveIndex, rectCoord);
+                this.moveRectMUpHandler(this.toMoveIndex);
                 this.activeIndex = this.toMoveIndex;
                 break;
             case "scale":
-                this.scaleRectMUpHandler(this.toScaleIndex, rectCoord);
+                this.scaleRectMUpHandler(this.toScaleIndex);
                 this.activeIndex = this.toScaleIndex;
                 break;
             case "new":
-                this.drawRectMUpHandler(rectCoord);
+                this.drawRectMUpHandler();
                 this.activeIndex = this.rects.length - 1;
                 break;
         }
+        console.log("活动矩形：" ,this.rects[this.activeIndex]);
         this.reset3action();
     }
     
@@ -257,7 +258,7 @@ class Mask{
     /**
      * 鼠标弹起事件，创建一个矩形分支
      */
-    moveRectMUpHandler(){
+    moveRectMUpHandler(index){
         // 更新this.rects列表中本次移动的矩形的数据
         this.rects[this.toMoveIndex].coord[0] += this.wh[0];
         this.rects[this.toMoveIndex].coord[1] += this.wh[1];
@@ -293,6 +294,12 @@ class Mask{
      * mouseup事件处理，新建完一个矩形
      */
     drawRectMUpHandler(){
+        
+        // 纠正一下矩形坐标, 保证宽高为正数，原点为左上角，即rect数组每个数据的正确性。
+        let rightRect = this.rectifyCoord([...this.origin, ...this.wh]);
+        this.origin = [rightRect[0], rightRect[1]];
+        this.wh = [rightRect[2], rightRect[3]];
+    
         // 新建矩形添加到this.rects中
         this.rects.push({
             maskId: this.maskId ++,
@@ -373,10 +380,6 @@ class Mask{
                 this.ctx.restore();
             }
         }
-    }
-    
-    removeRect(){
-    
     }
     
     reset3action(){
@@ -508,6 +511,34 @@ class Mask{
                 break;
         }
         return newRect;
+    }
+    
+    /**
+     * 如果新建矩形时，不是从左上角向右下角画的，则要对矩形rect数组的四个数变换
+     * 使其成为一个从左上角到右下角画出来的矩形
+     * @param rect
+     * @returns {*}
+     */
+    rectifyCoord(rect){
+        let x = rect[0];
+        let y = rect[1];
+        let width = rect[2];
+        let height = rect[3];
+        
+        // 左下角到右下角画出来的矩形
+        if(width > 0 && height < 0){
+            rect = [x, y + height, width, Math.abs(height)];
+        
+        // 右上角到左下角画出来的矩形
+        }else if(width < 0 && height > 0){
+            rect = [x + width, y, Math.abs(width), height];
+        
+        // 右下角到左上角画出来的矩形
+        }else if(width < 0 && height < 0){
+            rect = [x + width, y + height, Math.abs(width), Math.abs(height)];
+        }
+        
+        return rect;
     }
     
 }
