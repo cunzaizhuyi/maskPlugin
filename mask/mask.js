@@ -7,6 +7,7 @@
 
 class Mask{
     constructor(el, choiceEl, option){
+        
         // 要画遮罩的元素，要求是个canvas
         this.canvas = el || null;
         this.canvas.width = parseInt(window.getComputedStyle(this.canvas).width);
@@ -20,9 +21,11 @@ class Mask{
         // 接口项 设置
         ctx.fillStyle = option.fillStyle || "#eeeeee";
         ctx.strokeStyle = option.strokeStyle || "#0000ff";
-        this.bRectsStrokeStyle = option.bRectsStrokeStyle || ctx.strokeStyle;
-        this.inRectCursor = option.inRectCursor || 'move';
-        this.bSideLength = option.bSideLength || 6;
+        this.bRectsStrokeStyle = option.bRectsStrokeStyle || ctx.strokeStyle;// 矩形边界上的小矩形的颜色
+        this.inRectCursor = option.inRectCursor || 'move';// 当鼠标处于某个小矩形内部时鼠标样式
+        this.bSideLength = option.bSideLength || 6; // 矩形边界上小矩形的边长值
+        this.masksTime = option.masksTime;// 每个遮罩的开始显示时间和结束显示时间，一个遮罩对应一个矩形
+        this.second = 0; // 接收外界传来的秒数，一秒接收一次
         
         // 数据
         this.origin = [0, 0];
@@ -333,6 +336,19 @@ class Mask{
         this.ctx.fillRect(...rectCoord);
     }
     
+    fillText(rect){
+        let coord = rect.coord;
+        // 绘制矩形上mask id数字
+        this.ctx.save();
+        this.ctx.font = "20px Arial";
+        this.ctx.fillStyle = "#000000";
+        this.ctx.textAlign = 'center';
+        let textX = coord[0] + coord[2] / 2;
+        let textY = coord[1] + 20;
+        this.ctx.fillText(rect.maskId + 1, textX, textY);
+        this.ctx.restore();
+    }
+    
     /**
      * 清空整个画布
      */
@@ -349,14 +365,7 @@ class Mask{
             this.ctx.fillRect(coord[0], coord[1], coord[2], coord[3]);
             
             // 绘制矩形上mask id数字
-            this.ctx.save();
-            this.ctx.font = "20px Arial";
-            this.ctx.fillStyle = "#000000";
-            this.ctx.textAlign = 'center';
-            let textX = coord[0] + coord[2] / 2;
-            let textY = coord[1] + 20;
-            this.ctx.fillText(this.rects[i].maskId + 1, textX, textY);
-            this.ctx.restore();
+            this.fillText(this.rects[i]);
         }
     }
     
@@ -371,14 +380,7 @@ class Mask{
                 this.ctx.fillRect(coord[0], coord[1], coord[2], coord[3]);
                 
                 // 绘制矩形上mask id数字
-                this.ctx.save();
-                this.ctx.font = "20px Arial";
-                this.ctx.fillStyle = "#000000";
-                this.ctx.textAlign = 'center';
-                let textX = coord[0] + coord[2] / 2;
-                let textY = coord[1] + 20;
-                this.ctx.fillText(this.rects[i].maskId + 1, textX, textY);
-                this.ctx.restore();
+                this.fillText(this.rects[i]);
             }
         }
     }
@@ -636,6 +638,65 @@ class Mask{
             let coord = rects[i];
             this.ctx.strokeRect(coord[0], coord[1], coord[2], coord[3]);
         }
+    }
+    
+    //-------------------------------------控制遮罩显示与隐藏部分---------------------------------------------------
+    /**
+     * 根据this.masksTime修改this.rects，为其添加startTime和endTime属性
+     */
+    addTimeProp(){
+        for(let i = 0; i < this.masksTime.length; i++){
+            for(let j = 0; j < this.rects.length; j++){
+                if(this.rects[j].maskId === this.masksTime[i].maskId){
+                    this.rects[j].startTime = this.masksTime[i].startTime;
+                    this.rects[j].endTime = this.masksTime[i].endTime;
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * 根据每个遮罩的显示/隐藏时间，与当前接收到的秒数，每秒批量控制一次遮罩们的显隐
+     */
+    showAndHideControl(){
+        console.log(this.second);
+        this.addTimeProp();
+        for(let i = 0; i < this.rects.length; i++){
+            if(this.second >= this.rects[i].startTime && this.second <= this.rects[i].endTime){
+                this.show(i);
+            }else{
+                this.hide(i);
+            }
+        }
+    }
+    
+    /**
+     * 让this.rects中的指定遮罩显示
+     * @param index
+     */
+    show(index){
+        let coord = this.rects[index].coord;
+        this.fillRect(coord);
+        
+        // 绘制矩形上mask id数字
+        this.fillText(this.rects[index]);
+    }
+    
+    /**
+     * 让this.rects中的指定遮罩隐藏
+     * @param index
+     */
+    hide(index){
+        this.clearRectByIndex(index);
+    }
+    
+    /**
+     * 清除画布的局部，清除一个矩形的区域
+     * @param index
+     */
+    clearRectByIndex(index){
+        this.ctx.clearRect(...this.rects[index].coord);
     }
     
 }

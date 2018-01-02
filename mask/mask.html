@@ -64,10 +64,27 @@
 	        // 矩形边界上的八个小矩形 相关设置
             bRectsStrokeStyle:"#ff00ff",// 矩形边界上的小矩形的颜色，默认为'#0000ff'
             bSideLength: 8,// 矩形边界上小矩形的边长值，默认为6
+	        
+	        // 每个遮罩的开始显示时间和结束显示时间，一个遮罩对应一个矩形
+	        /*masksTime: [{
+                maskId: 0,
+		        startTime: 5,
+		        endTime: 10,
+	        }, {
+                maskId: 1,
+                startTime: 7,
+                endTime: 12,
+            }]*/
         });
         
         btn.addEventListener('click', function () {
             mask.enableDrawMask();
+            // 所有遮罩按其自身时效进行显隐
+            /*let a = 0;
+            window.setInterval(function () {
+                mask.second = ++ a;
+                mask.showAndHideControl();
+            }, 1000);*/
         });
         
     };
