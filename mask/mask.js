@@ -665,6 +665,8 @@ class Mask{
         for(let i = 0; i < this.rects.length; i++){
             if(this.second >= this.rects[i].startTime && this.second <= this.rects[i].endTime){
                 this.show(i);
+            }else if(!this.rects[i].startTime && !this.rects[i].endTime){
+                this.show(i);
             }else{
                 this.hide(i);
             }
