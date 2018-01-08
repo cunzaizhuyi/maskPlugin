@@ -15,19 +15,6 @@
 			background-color: #ccc;
 			position: absolute;
 		}
-		.choice{
-			position: absolute;
-			width: 65px;
-			height: 35px;
-			border: 1px solid blue;
-			box-sizing: border-box;
-		}
-		.fa-times{
-			color: red;
-		}
-		.fa-check{
-			color: green;
-		}
 		.btn-mask{
 			position: absolute;
 			top:600px;
@@ -36,25 +23,20 @@
 
 </head>
 <body>
+
 <canvas id="canvas"></canvas>
-<div class="choice">
-	<span class="cancelMask"><i class="fa fa-2x fa-times"></i></span>
-	<span class="confirmMask"><i class="fa fa-2x fa-check"></i></span>
-</div>
 
 <input type="button" value="遮罩" class="btn-mask">
-
 
 <script src="mask.js"></script>
 <script>
     window.onload = function () {
         
         let el = document.getElementById("canvas");
-        let choiceEl = document.getElementsByClassName('choice')[0];
         let btn = document.getElementsByClassName('btn-mask')[0];
         
-        // new 以及 传参。共三个参数，最后一个是可选参数。
-        let mask = new Mask(el, choiceEl, {
+        // new 以及 传参。共两个参数，最后一个是可选参数。
+        let mask = new Mask(el, {
             
             // 矩形相关设置
             fillStyle: "#eeeeee", // 矩形填充色, 默认为'#eeeeee'
@@ -78,7 +60,7 @@
         });
         
         btn.addEventListener('click', function () {
-            mask.enableDrawMask();
+            mask.btnClickHandler();
             // 所有遮罩按其自身时效进行显隐
             /*let a = 0;
             window.setInterval(function () {

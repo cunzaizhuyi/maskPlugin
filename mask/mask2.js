@@ -12,7 +12,7 @@ class Mask{
         this.canvas = el || null;
         this.canvas.width = parseInt(window.getComputedStyle(this.canvas).width);
         this.canvas.height = parseInt(window.getComputedStyle(this.canvas).height);
-    
+        
         // 初始化choice
         this.initChoice();
         
@@ -37,6 +37,7 @@ class Mask{
         this.toScaleIndex = -1;
         this.isMouseDown = false;
         this.activeIndex = -1;
+        this.isToNewMask = false;
         
         this.rects = [/*{
          id: 1,
@@ -71,17 +72,11 @@ class Mask{
      * 响应按钮的click事件, 接下来的一个down-up肯定是画遮罩的过程
      */
     btnClickHandler(){
-        this.initEvent();
-    }
-    
-    /**
-     * 禁止canvas上的一切事件，目前共三种
-     */
-    disableDrawMask(){
-        
-        this.canvas.removeEventListener("mousedown", this.mousedownHandler2);
-        this.canvas.removeEventListener("mousemove", this.mousemoveHandler2);
-        this.canvas.removeEventListener("mouseup", this.mouseupHandler2);
+        this.isToNewMask = true;
+        if(!this.hadInitEvent){
+            this.initEvent();
+            this.hadInitEvent = true;
+        }
     }
     
     /**
@@ -94,19 +89,21 @@ class Mask{
         
         // 重置三种可能的用户交互动作 标记
         this.reset3action();
-        // 判断是 准备移动、缩放、新建 一个矩形 的哪种情况
-        for(let i = 0; i < this.rects.length; i++){
-            if(this.isPointInRect(this.origin, this.rects[i].coord)){
-                this.todo = 'move';
-                this.toMoveIndex = i;
-            }
-            if(this.isPointOnBoundary(this.origin, this.rects[i].coord)){
-                this.todo = 'scale';
-                this.toScaleIndex = i;
-            }
-        }
-        if(this.todo !== 'scale' && this.todo !== 'move'){
+        
+        if(this.isToNewMask === true){
             this.todo = 'new';
+        }else{
+            // 判断是 准备移动、缩放 一个矩形 的哪种情况
+            for(let i = 0; i < this.rects.length; i++){
+                if(this.isPointInRect(this.origin, this.rects[i].coord)){
+                    this.todo = 'move';
+                    this.toMoveIndex = i;
+                }
+                if(this.isPointOnBoundary(this.origin, this.rects[i].coord)){
+                    this.todo = 'scale';
+                    this.toScaleIndex = i;
+                }
+            }
         }
     }
     
@@ -115,8 +112,10 @@ class Mask{
      * @param e
      */
     mousemoveHandler(e){
+        // 不管此刻是否mousedown, 移动到特定的位置就变换为特定的鼠标形状
         this.modifyCursorStyle([e.offsetX, e.offsetY]);
         
+        // 保证是按住鼠标的前提下进行的mouse move才能执行下面代码
         if(!this.isMouseDown){
             return;
         }
@@ -167,6 +166,7 @@ class Mask{
         
         //console.log("活动矩形：" ,this.rects[this.activeIndex]);
         this.reset3action();
+        this.isToNewMask = false;
     }
     
     /**
@@ -202,7 +202,7 @@ class Mask{
      */
     cancelMask(e){
         // 从this.rects中删除活动的矩形对象, 最重要一步
-        this.rects.splice(this.activeIndex ,1);
+        this.rects.splice(this.activeIndex, 1);
         
         // 清空画布
         this.clearCanvas();
