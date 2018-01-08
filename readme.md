@@ -53,6 +53,12 @@ masksTime举例：
     endTime: 13,
 }]
 ```
+## 文件说明
+
+有两个遮罩类，mask.js和mask2.js。
+他们的区别是是否需要点击button才能生成一个新的遮罩。
+其中，mask.js不需要，mask2.js需要每次点击按钮才能画新遮罩。
+
 
 ## 最后
 
