@@ -59,6 +59,9 @@ masksTime举例：
 他们的区别是是否需要点击button才能生成一个新的遮罩。
 其中，mask.js不需要，mask2.js需要每次点击按钮才能画新遮罩。
 
+## 应用效果图
+
+![](https://github.com/cunzaizhuyi/blog-assets/blob/master/nledit/mask2.png?raw=true)
 
 ## 最后
 
