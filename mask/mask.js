@@ -81,6 +81,13 @@ class Mask{
     }
     
     /**
+     * 禁止绘制一个新的遮罩，因为每一次绘制新遮罩必须由按钮触发，不能在canvas上自己想画几个画几个
+     */
+    disableDrawNewMask(){
+        
+    }
+    
+    /**
      * 鼠标按下，必触发新建矩形、移动矩形、缩放矩形 三种行为中的某一种
      * @param e
      */
@@ -145,7 +152,7 @@ class Mask{
         let end = [e.offsetX, e.offsetY];
         this.wh = [end[0] - this.origin[0], end[1] - this.origin[1]];
         
-        // 确定是三种行为中的哪一种引起的鼠标弹起
+        // 确定是三种行为中的哪一种引起的鼠标弹起，更新活动rect
         switch (this.todo){
             case "move":
                 this.moveRectMUpHandler(this.toMoveIndex);
@@ -160,6 +167,7 @@ class Mask{
                 this.activeIndex = this.rects.length - 1;
                 break;
         }
+        
         //console.log("活动矩形：" ,this.rects[this.activeIndex]);
         this.reset3action();
     }
@@ -271,6 +279,7 @@ class Mask{
      * 鼠标弹起事件，创建一个矩形分支
      */
     moveRectMUpHandler(index){
+        
         // 更新this.rects列表中本次移动的矩形的数据
         this.rects[this.toMoveIndex].coord[0] += this.wh[0];
         this.rects[this.toMoveIndex].coord[1] += this.wh[1];
@@ -281,6 +290,13 @@ class Mask{
         this.choiceDiv.style.left = x + "px";
         this.choiceDiv.style.top = y  + "px";
         this.choiceDiv.style.display = 'block';
+        
+        // 如果只是click了一下
+        if(this.wh[0] === 0 && this.wh[1] === 0){
+            this.clearRectByIndex(index);
+            this.strokeRect(this.rects[this.toMoveIndex].coord);
+            this.strokeEightDirection(this.rects[this.toMoveIndex].coord);
+        }
     }
     
     /**
@@ -288,6 +304,12 @@ class Mask{
      * @param index
      */
     scaleRectMUpHandler(index){
+        // 如果只是click了一下
+        if(this.wh[0] === 0 && this.wh[1] === 0){
+            this.origin = [];
+            this.reset3action();
+            return;
+        }
         // 更新this.rects列表中本次缩放的矩形的数据
         let coord = this.rects[index].coord;
         // 缩放后矩形的坐标
@@ -306,7 +328,13 @@ class Mask{
      * mouseup事件处理，新建完一个矩形
      */
     drawRectMUpHandler(){
-        
+    
+        // 如果只是click了一下
+        if(this.wh[0] === 0 && this.wh[1] === 0){
+            this.origin = [];
+            this.reset3action();
+            return;
+        }
         // 纠正一下矩形坐标, 保证宽高为正数，原点为左上角，即rect数组每个数据的正确性。
         let rightRect = this.rectifyCoord([...this.origin, ...this.wh]);
         this.origin = [rightRect[0], rightRect[1]];
